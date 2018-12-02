@@ -87,7 +87,9 @@ describe('Component: DateAndTime', () => {
         fixtureWrapper.detectChanges();
 
 
-        let currentDay = fixtureWrapper.componentInstance.dateTime.value.getDate();
+        let currentDay = fixtureWrapper.componentInstance.dateTime.value.getTime();
+        let minDate = fixtureWrapper.componentInstance.dateTime.minDate.getTime();
+        let maxDate = fixtureWrapper.componentInstance.dateTime.maxDate.getTime();
         let item = fixtureWrapper.nativeElement.querySelector('.pi-calendar');
         item.click();
 
@@ -100,13 +102,14 @@ describe('Component: DateAndTime', () => {
         tick();
         fixtureWrapper.detectChanges();
 
-        let changedDay = fixtureWrapper.componentInstance.dateTime.value.getDate();
+        let changedDay = fixtureWrapper.componentInstance.dateTime.value.getTime();
         expect(changedDay).not.toEqual(currentDay);
+        expect(changedDay).toBeGreaterThanOrEqual(minDate);
+        expect(changedDay).toBeLessThanOrEqual(maxDate);
 
         flushMicrotasks();
         flushPendingTimers();
     }));
-
 
 });
 
@@ -115,7 +118,8 @@ describe('Component: DateAndTime', () => {
 @Component({
     selector: 'wrapper-comp',
     template: `
-        <aw-date-time [value]="date" [editable]="editable" [name]="'bbdd'">
+        <aw-date-time [value]="date" [editable]="editable" [name]="'bbdd'"
+                      [minDate]="minDate" [maxDate]="maxDate">
         </aw-date-time>
 
     `
@@ -128,15 +132,21 @@ class TestDateTimeBasicBehaviorComponent {
     editable = true;
     showTime = true;
 
+    minDate: Date = new Date();
+    maxDate: Date = new Date();
+
     date: Date = new Date();
 
 
     constructor() {
         this.date.setFullYear(2016, 10, 3);
         this.date.setHours(10, 10, 10);
+        this.minDate.setFullYear(2016, 9, 1);
+        this.minDate.setHours(10, 10, 10);
+        this.maxDate.setFullYear(2016, 11, 1);
+        this.maxDate.setHours(10, 10, 10);
     }
 }
-
 
 /* jshint ignore:start */
 @Component({
